@@ -1,10 +1,6 @@
 <?php
 
 return [
-
-
-    'locales'         => ['en'],
+    'locales' => ['en'],
     'fallback_locale' => 'en',
-
-
 ];

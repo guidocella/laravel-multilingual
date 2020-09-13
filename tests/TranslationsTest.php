@@ -1,179 +1,98 @@
 <?php
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Themsaid\Multilingual\Tests\Models\MULTILINGUAL_TEST_PLANET_MODEL as Planet;
-use Themsaid\Multilingual\Tests\Models\MULTILINGUAL_TEST__UNTRANSLATABLE_PLANET_MODEL as UntranslatablePlanet;
+namespace GuidoCella\Multilingual;
 
-class TranslationsTest extends TestCase
+use GuidoCella\Multilingual\Models\Planet;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class TranslationsTest extends MultilingualTestCase
 {
-    use DatabaseTransactions;
-
-    /**
-     *
-     * @return void
-     */
-    public function test_model_attr_with_no_translatables_return_original_value()
+    protected function setUp(): void
     {
-        $planet = UntranslatablePlanet::create([
-            'name' => 'Mercury'
-        ]);
+        parent::setUp();
 
-        $this->assertEquals('Mercury', $planet->name);
+        Schema::create('planets', fn (Blueprint $table) => $table->string('name')->nullable());
     }
 
-    public function test_translatable_attribute_casted_as_NOT_ARRAY_is_saved_as_json_still()
+    public function testTranslatableAttributeIsValueOfCurrentLocale()
     {
-        $planet = Planet::create([
-            'order' => [
-                'en' => 'One',
-                'sp' => 'Uno'
-            ]
-        ]);
-
-        $this->assertJson($planet->getOriginal('order'));
-    }
-
-    public function test_translatable_attribute_return_value_of_current_locale()
-    {
-        $planet = Planet::create([
+        config(['app.locale' => 'es']);
+        $this->assertSame('Mercurio', Planet::create([
             'name' => [
                 'en' => 'Mercury',
-                'sp' => 'Mercurio'
-            ]
-        ]);
-
-        config(['app.locale' => 'sp']);
-
-        $this->assertEquals('Mercurio', $planet->name);
+                'es' => 'Mercurio',
+            ],
+        ])->name);
     }
 
-    public function test_translatable_attribute_return_empty_string_if_no_translations()
+    public function testTranslatableAttributeIsNullIfTranslationsAreMissing()
     {
-        $planet = Planet::create();
-
-        config(['app.locale' => 'en']);
-
-        $this->assertEquals('', $planet->name);
+        $this->assertNull(Planet::create()->name);
     }
 
-    public function test_translatable_attribute_return_default_value_if_current_locale_not_exist()
+    public function testTranslatableAttributeIsFallbackValueIfCurrentLocaleValueIsMissing()
     {
-        $planet = Planet::create([
-            'name' => [
-                'en' => 'Mercury',
-                'sp' => 'Mercurio'
-            ]
-        ]);
-
-        config(['multilingual.fallback_locale' => 'sp']);
+        config(['multilingual.fallback_locale' => 'es']);
         config(['app.locale' => 'ar']);
-
-        $this->assertEquals('Mercurio', $planet->name);
-    }
-
-    public function test_translatable_attribute_return_fallback_value_if_current_locale_empty()
-    {
-        $planet = Planet::create([
+        $this->assertSame('Mercurio', Planet::create([
             'name' => [
-                'en' => '',
-                'sp' => 'Mercurio'
-            ]
-        ]);
-
-        config(['multilingual.fallback_locale' => 'sp']);
-        config(['app.locale' => 'en']);
-
-        $this->assertEquals('Mercurio', $planet->name);
+                'en' => 'Mercury',
+                'es' => 'Mercurio',
+            ],
+        ])->name);
     }
 
-    public function test_translatable_attribute_return_empty_value_if_current_and_fallback_locale_empty()
+    public function testTranslatableAttributeIsFallbackValueIfCurrentLocaleValueIsNull()
     {
-        $planet = Planet::create([
+        config(['multilingual.fallback_locale' => 'es']);
+        config(['app.locale' => 'en']);
+        $this->assertSame('Mercurio', Planet::create([
             'name' => [
-                'en' => '',
-                'sp' => '',
-                'fr' => 'No Idea'
-            ]
-        ]);
-
-        config(['multilingual.fallback_locale' => 'sp']);
-        config(['app.locale' => 'en']);
-
-        $this->assertEquals('', $planet->name);
+                'en' => null,
+                'es' => 'Mercurio',
+            ],
+        ])->name);
     }
 
-    public function test_returning_array_of_all_translations()
+    public function testTranslatableAttributeIsNullIfCurrentAndFallbackLocaleValuesAreNull()
     {
-        $planetName = [
+        config(['multilingual.fallback_locale' => 'es']);
+        config(['app.locale' => 'en']);
+        $this->assertNull(Planet::create([
+            'name' => [
+                'en' => null,
+                'es' => null,
+                'it' => 'Mercurio',
+            ],
+        ])->name);
+    }
+
+    public function testArrayOfAllTranslations()
+    {
+        config(['app.locale' => 'en']);
+        $planetNames = [
             'en' => 'Mercury',
-            'sp' => 'Mercurio'
+            'es' => 'Mercurio',
         ];
-
-        $planet = Planet::create([
-            'name' => $planetName
-        ]);
-
-        config(['app.locale' => 'en']);
-
-        $this->assertEquals($planetName, $planet->nameTranslations->toArray());
+        $this->assertSame($planetNames, Planet::create(['name' => $planetNames])->nameTranslations->toArray());
     }
 
-    public function test_returning_the_value_of_specific_locale()
+    public function testValueOfSpecificLocale()
     {
-        $planetName = [
+        config(['app.locale' => 'en']);
+        $this->assertSame('Mercurio', Planet::create(['name' => [
             'en' => 'Mercury',
-            'sp' => 'Mercurio'
-        ];
-
-        $planet = Planet::create([
-            'name' => $planetName
-        ]);
-
-        config(['app.locale' => 'en']);
-
-        $this->assertEquals('Mercurio', $planet->nameTranslations->sp);
+            'es' => 'Mercurio',
+        ]])->nameTranslations->es);
     }
 
-    public function test_returning_empty_string_if_NO_value_of_specific_locale()
+    public function testValueOfSpecificLocaleIsNullIfTranslationIsMissing()
     {
-        $planetName = [
+        config(['app.locale' => 'en']);
+        $this->assertNull(Planet::create(['name' => [
             'en' => 'Mercury',
-            'sp' => ''
-        ];
-
-        $planet = Planet::create([
-            'name' => $planetName
-        ]);
-
-        config(['app.locale' => 'en']);
-
-        $this->assertEquals('', $planet->nameTranslations->sp);
+            'es' => 'Mercurio',
+        ]])->nameTranslations->it);
     }
-
-    public function test_returning_empty_string_if_value_not_array()
-    {
-        $planetId = Planet::insertGetId([
-            'name' => 'Earth'
-        ]);
-
-        $planet = Planet::find($planetId);
-
-        config(['app.locale' => 'en']);
-
-        $this->assertEquals('', $planet->name);
-    }
-
-    public function test_returning_empty_string_for_a_specific_locale_if_value_not_array()
-    {
-        $planetId = Planet::insertGetId([
-            'name' => 'Earth'
-        ]);
-
-        $planet = Planet::find($planetId);
-
-        config(['app.locale' => 'en']);
-
-        $this->assertEquals('', $planet->nameTranslations->sp);
-    }
-
 }

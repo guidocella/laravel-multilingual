@@ -1,91 +1,45 @@
 <?php
 
-use Illuminate\Support\Facades\Validator;
+namespace GuidoCella\Multilingual;
 
-class ValidationTest extends TestCase
+class ValidationTest extends MultilingualTestCase
 {
-    public function test_validation_fails_if_required_but_not_provided()
+    protected function setUp(): void
     {
-        $validator = Validator::make(
-            ['name' => ''],
-            ['name' => 'translatable_required']
-        );
+        parent::setUp();
 
-        $this->assertTrue($validator->messages()->has('name'));
+        (new ServiceProvider(app()))->boot();
     }
 
-    public function test_validation_fails_if_required_but_empty_array()
+    public function testFailsWithoutArray()
     {
-        $validator = Validator::make(
-            ['name' => []],
-            ['name' => 'translatable_required']
-        );
-
-        $this->assertTrue($validator->messages()->has('name'));
-    }
-
-    public function test_validation_fails_if_required_but_string()
-    {
-        $validator = Validator::make(
+        $this->assertTrue(validator(
             ['name' => 'This is not cool'],
             ['name' => 'translatable_required']
-        );
-
-        $this->assertTrue($validator->messages()->has('name'));
+        )->messages()->has('name'));
     }
 
-    public function test_validation_fails_if_required_and_has_correct_keys_but_empty_values()
+    public function testFailsWithMissingTranslations()
     {
-        $validator = Validator::make(
-            ['name' => ['en' => '']],
-            ['name' => 'translatable_required']
-        );
-
-        $this->assertTrue($validator->messages()->has('name'));
-    }
-
-    public function test_validation_fails_if_required_and_has_missing_translations()
-    {
-        $validator = Validator::make(
+        $this->assertTrue(validator(
             ['name' => ['en' => 'One']],
             ['name' => 'translatable_required']
-        );
-
-        $this->assertTrue($validator->messages()->has('name'));
+        )->messages()->has('name'));
     }
 
-    public function test_validation_fails_if_required_and_has_empty_translations()
+    public function testFailsWithEmptyTranslations()
     {
-        $validator = Validator::make(
-            ['name' => ['en' => 'One', 'sp' => '']],
+        $this->assertTrue(validator(
+            ['name' => ['en' => 'One', 'es' => '']],
             ['name' => 'translatable_required']
-        );
-
-        $this->assertTrue($validator->messages()->has('name'));
+        )->messages()->has('name'));
     }
 
-    public function test_validation_succeed_if_required_and_OK()
+    public function testPassesWithAllTranslations()
     {
-        $validator = Validator::make(
-            ['name' => ['en' => 'One', 'sp' => 'Uno']],
+        $this->assertTrue(validator(
+            ['name' => ['en' => 'One', 'es' => 'Uno', 'it' => 'Uno']],
             ['name' => 'translatable_required']
-        );
-
-        $this->assertFalse($validator->messages()->has('name'));
-    }
-
-    public function test_only_specific_locales_required()
-    {
-        $validator = Validator::make(
-            ['name' => ['en' => 'One', 'sp' => 'Uno']],
-            ['name.en' => 'required']
-        );
-        $this->assertTrue($validator->passes());
-
-        $validator = Validator::make(
-            ['name' => ['sp' => 'Uno']],
-            ['name.en' => 'required']
-        );
-        $this->assertFalse($validator->passes());
+        )->passes());
     }
 }

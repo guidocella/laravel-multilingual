@@ -1,34 +1,22 @@
 <?php
 
-namespace Themsaid\Multilingual;
+namespace GuidoCella\Multilingual;
 
 class TranslationsManager
 {
-    private $translations;
+    protected array $translations;
 
-    /**
-     * @param $translations
-     */
-    public function __construct($translations)
+    public function __construct(array $translations)
     {
         $this->translations = $translations;
     }
 
-    /**
-     * @param $key
-     * @return mixed
-     */
-    public function __get($key)
+    public function __get(string $key): ?string
     {
-        return @$this->translations[$key] ?: '';
+        return $this->translations[$key] ?? null;
     }
 
-    /**
-     * Return an array of available locales with values
-     *
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->translations;
     }

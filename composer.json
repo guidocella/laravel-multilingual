@@ -1,35 +1,31 @@
 {
-    "name": "themsaid/laravel-multilingual",
-    "description": "Easy multilingual laravel models",
+    "name": "guidocella/laravel-multilingual",
+    "description": "Easy multilingual Laravel models",
     "keywords": ["laravel", "multilingual", "translation"],
-    "homepage": "https://github.com/themsaid/laravel-multilingual",
+    "homepage": "https://github.com/guidocella/laravel-multilingual",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Mohamed Said",
-            "email": "theMohamedSaid@gmail.com"
-        }
-    ],
     "require": {
-        "illuminate/support": "^5.1||^6.0",
-        "php" : ">=5.3.0"
+        "illuminate/database": "^8",
+        "php" : ">=7.4"
     },
     "require-dev": {
-        "phpunit/phpunit" : "^8.0",
-        "orchestra/testbench": "^4.0"
+        "laravel/laravel": "^8",
+        "phpunit/phpunit" : "^9"
     },
     "autoload": {
         "psr-4": {
-            "Themsaid\\Multilingual\\": "src"
-        },
-        "classmap": [
-            "tests"
-        ]
+            "GuidoCella\\Multilingual\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "GuidoCella\\Multilingual\\": "tests"
+        }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Themsaid\\Multilingual\\MultilingualServiceProvider"
+                "GuidoCella\\Multilingual\\ServiceProvider"
             ]
         }
     }
