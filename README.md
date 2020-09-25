@@ -22,7 +22,7 @@ Then publish the config file:
 php artisan vendor:publish
 ```
 
-# Usage
+## Usage
 
 First make sure that the translatable attributes' field type is `text` or `json`. If you are building the database from a migration file you may do this:
 
@@ -94,7 +94,7 @@ You can update the translation in a single locale with Eloquent's arrow syntax f
 $country->update(['name->'.App::getLocale() => 'Spain']);
 ```
 
-# Validation
+## Validation
 
 You can validate the presence of specific locales like so:
 
@@ -126,7 +126,7 @@ Now you only need to add the translated message of our new validation rule: add 
 'translatable_required' => 'The :attribute translations must be provided.',
 ```
 
-# Queries
+## Queries
 
 Laravel lets you query JSON columns with the `->` operator:
 
