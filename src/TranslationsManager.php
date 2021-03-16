@@ -4,9 +4,9 @@ namespace GuidoCella\Multilingual;
 
 class TranslationsManager
 {
-    protected array $translations;
+    protected ?array $translations;
 
-    public function __construct(array $translations)
+    public function __construct(?array $translations)
     {
         $this->translations = $translations;
     }
