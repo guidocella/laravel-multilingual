@@ -20,7 +20,7 @@ trait Translatable
         return parent::getAttribute($key);
     }
 
-    public function getValueOfCurrentLocaleForKey(string $key): ?string
+    public function getValueOfCurrentLocaleForKey(string $key)
     {
         $translations = $this->getAttributeValue($key);
 

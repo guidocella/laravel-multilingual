@@ -11,7 +11,7 @@ class TranslationsManager
         $this->translations = $translations;
     }
 
-    public function __get(string $key): ?string
+    public function __get(string $key)
     {
         return $this->translations[$key] ?? null;
     }
