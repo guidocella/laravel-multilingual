@@ -31,17 +31,8 @@ trait Translatable
     public function getCasts(): array
     {
         return array_merge(
-            array_fill_keys($this->translatable ?? [], 'array'),
+            array_fill_keys($this->translatable ?? [], 'json:unicode'),
             parent::getCasts()
         );
-    }
-
-    /**
-     * Alter the default behaviour when it comes to using json_encode for model attributes;
-     * this will save the JSON as UTF-8 to the database instead of escaping characters.
-     */
-    protected function asJson($value)
-    {
-        return json_encode($value, JSON_UNESCAPED_UNICODE);
     }
 }
