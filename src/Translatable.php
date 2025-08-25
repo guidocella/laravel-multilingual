@@ -24,8 +24,8 @@ trait Translatable
     {
         $translations = $this->getAttributeValue($key);
 
-        return $translations[config('app.locale')] ??
-            $translations[config('multilingual.fallback_locale')] ?? null;
+        return $translations[config('app.locale')]
+            ?? $translations[config('multilingual.fallback_locale')] ?? null;
     }
 
     public function getCasts(): array
