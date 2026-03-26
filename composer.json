@@ -5,10 +5,10 @@
     "homepage": "https://github.com/guidocella/laravel-multilingual",
     "license": "MIT",
     "require": {
-        "illuminate/database": "^12.3"
+        "illuminate/database": "^13"
     },
     "require-dev": {
-        "laravel/laravel": "^12.3",
+        "laravel/laravel": "^13",
         "phpunit/phpunit" : "^13"
     },
     "autoload": {
