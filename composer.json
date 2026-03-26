@@ -9,7 +9,7 @@
     },
     "require-dev": {
         "laravel/laravel": "^12.3",
-        "phpunit/phpunit" : "^12"
+        "phpunit/phpunit" : "^13"
     },
     "autoload": {
         "psr-4": {
